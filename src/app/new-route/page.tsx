@@ -1,13 +1,14 @@
 'use client'
 
 import type { DirectionsResponseData, FindPlaceFromTextResponseData } from "@googlemaps/google-maps-services-js";
-import { FormEvent, useRef } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { useMap } from "../hooks/userMap";
 
 export function NewRoutePage() {
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const map = useMap(mapContainerRef);
+  const [directionsData, setDirectionsData] = useState<DirectionsResponseData & { request: any }>();
 
   async function searchPlaces(event: FormEvent) {
     event.preventDefault();
@@ -39,6 +40,8 @@ export function NewRoutePage() {
     const directionsResponse = await fetch(`http://localhost:3000/directions?originId=${placeSourceId}&destinationId=${placeDestinationId}`);
     const directionsData: DirectionsResponseData & { request: any } = await directionsResponse.json();
 
+    setDirectionsData(directionsData);
+
     map?.removeAllRoutes();
 
     await map?.addRouteWithIcons({
@@ -53,8 +56,25 @@ export function NewRoutePage() {
         position: directionsData.routes[0].legs[0].start_location,
       }
     })
-
   }
+
+  async function createRoute() {
+    const startAddress = directionsData!.routes[0].legs[0].start_address;
+    const endAddress = directionsData!.routes[0].legs[0].end_address;
+    const response = await fetch('http://localhost:3000/routes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'aplication/json'
+      },
+      body: JSON.stringify({
+        name: `${startAddress} - ${endAddress}`,
+        source_id: directionsData!.request.origin.place_id,
+        destination_id: directionsData!.request.destination.place_id,
+      })
+    });
+    const route = await response.json();
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'row', height: '100%', width: '100%' }}>
       <div>
@@ -68,6 +88,15 @@ export function NewRoutePage() {
           </div>
           <button type="submit">Pesquisar</button>
         </form>
+        {directionsData && (
+          <ul>
+            <li>Origem: {directionsData!.routes[0].legs[0].start_address}</li>
+            <li>Destino: {directionsData!.routes[0].legs[0].end_address}</li>
+            <li>
+              <button onClick={ createRoute }>Criar rota</button>
+            </li>
+          </ul>
+        )}
       </div>
       <div id="map" style={{ height: '100%', width: '100%' }} ref={mapContainerRef}></div>
     </div>
