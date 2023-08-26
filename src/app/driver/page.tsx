@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useMap } from "../hooks/userMap";
 import useSwr from "swr";
 import { fetcher } from "../utils/http";
@@ -26,7 +26,7 @@ export function DriverPage() {
       socket.disconnect();
     }
   }, [])
-  
+
   async function startRoute() {
     const routeId = (document.getElementById("route") as HTMLSelectElement).value;
     const response = await fetch(`http://localhost:3000/routes/${routeId}`)
