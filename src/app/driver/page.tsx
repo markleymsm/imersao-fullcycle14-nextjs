@@ -21,9 +21,8 @@ export function DriverPage() {
   async function startRoute() {
     const routeId = (document.getElementById("route") as HTMLSelectElement).value;
     const response = await fetch(`http://localhost:3000/routes/${routeId}`)
-    const route = await response.json();
+    const route: Route = await response.json();
     map?.removeAllRoutes();
-
     await map?.addRouteWithIcons({
       routeId: routeId,
       startMarkerOptions: {
@@ -34,8 +33,8 @@ export function DriverPage() {
       },
       carMarkerOptions: {
         position: route.directions.routes[0].legs[0].start_location,
-      }
-    })
+      },
+    });
   }
 
   return (
@@ -51,7 +50,7 @@ export function DriverPage() {
               </option>
             ))}
           </select>
-          <button type="submit" onSubmit={startRoute}>Iniciar viagem</button>
+          <button type="submit" onClick={startRoute}>Iniciar viagem</button>
         </div>
       </div>
       <div id="map" style={{ height: '100%', width: '100%' }} ref={mapContainerRef}></div>
