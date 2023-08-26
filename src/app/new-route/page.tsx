@@ -1,11 +1,13 @@
 'use client'
 
 import type { FindPlaceFromTextResponseData } from "@googlemaps/google-maps-services-js";
-import { Loader } from "@googlemaps/js-api-loader";
-import { FormEvent, useEffect } from "react";
+import { FormEvent, useRef } from "react";
+import { useMap } from "../hooks/userMap";
 
 export function NewRoutePage() {
 
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const map = useMap(mapContainerRef);
 
   async function searchPlaces(event: FormEvent) {
     event.preventDefault();
@@ -53,7 +55,7 @@ export function NewRoutePage() {
           <button type="submit">Pesquisar</button>
         </form>
       </div>
-      <div id="map" style={{ height: '100%', width: '100%' }}></div>
+      <div id="map" style={{ height: '100%', width: '100%' }} ref={mapContainerRef}></div>
     </div>
   );
 }
