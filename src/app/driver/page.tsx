@@ -5,6 +5,7 @@ import { useMap } from "../hooks/userMap";
 import useSwr from "swr";
 import { fetcher } from "../utils/http";
 import { Route } from "../utils/models";
+import { socket } from "../utils/socket-io";
 
 export function DriverPage() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -17,7 +18,15 @@ export function DriverPage() {
   } = useSwr<Route[]>("http://localhost:3000/routes", fetcher, {
     fallbackData: [],
   });
-
+  
+  useEffect(() => {
+    socket.connect();
+    socket.emit('massge');
+    return () => {
+      socket.disconnect();
+    }
+  }, [])
+  
   async function startRoute() {
     const routeId = (document.getElementById("route") as HTMLSelectElement).value;
     const response = await fetch(`http://localhost:3000/routes/${routeId}`)

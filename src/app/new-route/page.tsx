@@ -12,14 +12,6 @@ export function NewRoutePage() {
     DirectionsResponseData & { request: any }
   >();
 
-  useEffect(() => {
-    socket.connect();
-    socket.emit('massge');
-    return () => {
-      socket.disconnect();
-    }
-  }, [])
-
   async function searchPlaces(event: FormEvent) {
     event.preventDefault();
     const source = (document.getElementById("source") as HTMLInputElement)
