@@ -21,7 +21,6 @@ export function DriverPage() {
   
   useEffect(() => {
     socket.connect();
-    socket.emit('massge');
     return () => {
       socket.disconnect();
     }
@@ -50,7 +49,7 @@ export function DriverPage() {
     for (const step of steps) {
       await sleep(2000);
       map?.moveCar(routeId, step.start_location);
-      socket.emit('new-point', {
+      socket.emit('new-points', {
         route_id: routeId,
         lat: step.start_location.lat,
         lng: step.start_location.lng,
@@ -58,7 +57,7 @@ export function DriverPage() {
       
       await sleep(2000);
       map?.moveCar(routeId, step.end_location);
-      socket.emit('new-point', {
+      socket.emit('new-points', {
         route_id: routeId,
         lat: step.end_location.lat,
         lng: step.end_location.lng,
